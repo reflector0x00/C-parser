@@ -20,7 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="expression_chain.h" />
+    <ClInclude Include="lalr_parser.h" />
+    <ClInclude Include="lalr_states.h" />
+    <ClInclude Include="lalr_table.h" />
+    <ClInclude Include="lexer.h" />
+    <ClInclude Include="parse_item.h" />
     <ClInclude Include="parse_rule.h" />
+    <ClInclude Include="parse_state.h" />
+    <ClInclude Include="parse_tree.h" />
     <ClInclude Include="rule_expression.h" />
   </ItemGroup>
   <ItemGroup>
