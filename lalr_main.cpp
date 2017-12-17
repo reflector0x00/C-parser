@@ -5,113 +5,42 @@
 #include <unordered_set>
 #include "lalr_parser.h"
 #include "lexer.h"
+#include "c_token.h"
+#include "c_parser.h"
 
 #define rt(x) rule_terminal(x)
 
 
-enum c_token {
-	t_empty,
-	t_auto,
-	t_break,
-	t_case,
-	t_char,
-	t_const,
-	t_continue,
-	t_default,
-	t_do,
-	t_double,
-	t_else,
-	t_enum,
-	t_extern,
-	t_float,
-	t_for,
-	t_goto,
-	t_if,
-	t_inline,
-	t_int,
-	t_long,
-	t_register,
-	t_restrict,
-	t_return,
-	t_short,
-	t_signed,
-	t_sizeof,
-	t_static,
-	t_struct,
-	t_switch,
-	t_typedef,
-	t_union,
-	t_unsigned,
-	t_void,
-	t_volatile,
-	t_while,
-	t_alignas,
-	t_alignof,
-	t_atomic,
-	t_bool,
-	t_complex,
-	t_generic,
-	t_imaginary,
-	t_noreturn,
-	t_static_assert,
-	t_thread_local,
-	t_func_name,
-	t_identifier,
-	t_i_constant,
-	t_f_constant,
-	t_string_literal,
-	t_ellipsis,
-	t_right_assign,
-	t_left_assign,
-	t_add_assign,
-	t_sub_assign,
-	t_mul_assign,
-	t_div_assign,
-	t_mod_assign,
-	t_and_assign,
-	t_xor_assign,
-	t_or_assign,
-	t_right_op,
-	t_left_op,
-	t_inc_op,
-	t_dec_op,
-	t_ptr_op,
-	t_and_op,
-	t_or_op,
-	t_le_op,
-	t_ge_op,
-	t_eq_op,
-	t_ne_op,
-	t_semicolon,
-	t_brace_left,
-	t_brace_right,
-	t_comma,
-	t_colon,
-	t_assign,
-	t_round_left,
-	t_round_right,
-	t_square_left,
-	t_square_right,
-	t_dot,
-	t_ampersand,
-	t_exmark,
-	t_tilda,
-	t_minus,
-	t_plus,
-	t_star,
-	t_slash,
-	t_percent,
-	t_angle_left,
-	t_angle_right,
-	t_carrete,
-	t_vertical,
-	t_qmark,
-	t_typedef_name,
-	t_enumeration_constant
-};
-
-
 int main(int argc, char* argv[]) {
+
+
+	std::unordered_set<std::string> typedefs;
+	std::unordered_set<std::string> enums;
+
+
+	function_t<c_token> c_parser_functions[] = {
+
+	[&enums](parse_tree<c_token>& data) mutable {
+		enums.insert(data.last().at(0).data());
+		return true;
+	} ,
+
+	[&typedefs](parse_tree<c_token>& data) mutable {
+	parse_tree<c_token>& current = data.last();
+	if (current.at(0).begin()->id() == t_typedef) {
+		for (size_t i = 0; i < current.at(1).size(); ++i)
+			for (auto iter = current.at(1).at(i).begin(); iter != current.at(1).at(i).end(); ++iter) {
+				if (iter->id() == t_identifier) {
+					typedefs.insert(iter->data());
+					break;
+				}
+			}
+		}
+		return true;
+	}
+
+	};
+
 
 	if (argc != 3) {
 		std::cout << "usage:" << std::endl
@@ -119,9 +48,6 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
-
-	std::unordered_set<std::string> typedefs;
-	std::unordered_set<std::string> enums;
 
 	lexer lex(" \t\n", "'\"",
 	{
@@ -323,7 +249,7 @@ int main(int argc, char* argv[]) {
 
 	lex.add_keyword("\n", [](std::string& name) { return 0; });
 	lex.add_keyword(" ", [](std::string& name) { return 0; });
-
+	/*
 	//TO-DO: put far away
 #define ctr_bind_identifier(x) x(#x)
 
@@ -941,6 +867,11 @@ int main(int argc, char* argv[]) {
 
 	lalr_states<c_token> states(program);
 	lalr_table<c_token> table(states);
+	std::ofstream table_output("table_output.cpp");
+	table.to_char_array(table_output, "c_parser", "c_token");
+	table_output.close();*/
+	lalr_table<c_token> table(c_parser_table, c_parser_size, c_parser_strings, c_parser_functions);
+
 	lalr_parser<c_token, std::string> parser(table);
 
 	std::ifstream file_in(argv[1]);
@@ -962,5 +893,10 @@ int main(int argc, char* argv[]) {
 	parse_tree<c_token>& tree = parser.get_tree();
 
 	tree.to_dot(file_out);
+
+
+	file_in.close();
+	file_out.close();
+
 	return 0;
 }

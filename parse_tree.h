@@ -4,6 +4,8 @@
 #include <vector>
 #include <queue>
 
+template <typename T>
+class parse_tree;
 
 template <typename T>
 class leaf_iterator {

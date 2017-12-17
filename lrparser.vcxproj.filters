@@ -45,9 +45,18 @@
     <ClInclude Include="lexer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="c_parser.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="c_token.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lrparser.cpp">
+    <ClCompile Include="lalr_main.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="c_parser.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

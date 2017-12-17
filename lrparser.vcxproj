@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="c_parser.h" />
+    <ClInclude Include="c_token.h" />
     <ClInclude Include="expression_chain.h" />
     <ClInclude Include="lalr_parser.h" />
     <ClInclude Include="lalr_states.h" />
@@ -31,7 +33,8 @@
     <ClInclude Include="rule_expression.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lrparser.cpp" />
+    <ClCompile Include="c_parser.cpp" />
+    <ClCompile Include="lalr_main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

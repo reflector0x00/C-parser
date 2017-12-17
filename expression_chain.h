@@ -72,10 +72,8 @@ public:
 		for (expression_chain<T>* iter = _next; iter; iter = iter->_next)
 			iter->_function = function;
 	}
-	bool function(parse_tree<T>& data) {
-		if (_function)
-			return _function(data);
-		return true;
+	function_t<T> function() {
+		return _function;
 	}
 	~expression_chain() {
 		delete _next;

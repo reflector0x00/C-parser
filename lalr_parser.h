@@ -8,18 +8,19 @@
 #include "parse_tree.h"
 
 
-//TODO: сделать везде этот класс
+//TODO: (make everywhere thi class) Don't, plz
 template <typename T>
 class alpha {
-	parse_rule<T>* _nterminal;
+	//parse_rule<T>* _nterminal;
+	std::string _nterminal;
 	T _terminal;
 public:
-	alpha(parse_rule<T>* nterminal) : _nterminal(nterminal), _terminal(T()) {}
-	alpha(T terminal) : _nterminal(nullptr), _terminal(terminal) {}
+	alpha(std::string nterminal) : _nterminal(nterminal), _terminal(T()) {}
+	alpha(T terminal) : _terminal(terminal) {}
 	bool is_terminal() {
-		return !_nterminal;
+		return _nterminal == std::string();
 	}
-	parse_rule<T>* nterminal() {
+	std::string nterminal() {
 		return _nterminal;
 	}
 	T terminal() {
@@ -76,7 +77,7 @@ public:
 		case tnt_reduce: {
 			//std::cout << "reduce" << std::endl;
 			std::string convolution;
-			for (size_t i = 0; i < node.reduce->stage(); ++i) {
+			for (size_t i = 0; i < node.reduce_size; ++i) {
 
 				if (_symbols.top().is_terminal())
 					convolution = std::to_string(_symbols.top().terminal()) + convolution;
@@ -88,12 +89,12 @@ public:
 				_states.pop();
 			}
 
-			_tree.reduce(node.reduce->stage(), node.reduce->left().name());
+			_tree.reduce(node.reduce_size, node.reduce_name);
 
 			_strings.push(convolution);
-			_symbols.emplace(&(node.reduce->left()));
+			_symbols.emplace(node.reduce_name);
 			alpha<T>& top = _symbols.top();
-			table_node<T>& state_node = _table->at({ _states.top(), (size_t)_symbols.top().nterminal() }); //TODO: сделай что-нибудь с этим... Пожалуйста
+			table_node<T>& state_node = _table->at({ _states.top(), std::hash<std::string>()(_symbols.top().nterminal()) }); //TODO: сделай что-нибудь с этим... Пожалуйста
 			if (!state_node.type)
 				throw std::runtime_error(std::string("Syntax error at symbol ") + std::to_string(symbol));
 
@@ -101,9 +102,9 @@ public:
 				throw std::logic_error("Nterminal node not contain state");
 
 			_states.push(state_node.index);
-
-			if (!node.reduce->right()->function(_tree))
-				return true;
+			if(node.reduce_function)
+				if (!node.reduce_function(_tree))
+					return true;
 
 			return next(symbol, data); //TODO: без рекурсии
 		}
