@@ -56,13 +56,13 @@ class lalr_table {
 		}
 	};
 	struct lalr_table_data {
-		size_t index_i;
-		size_t index_j;
+		uint64_t index_i;
+		uint64_t index_j;
 		table_node_type type;
-		size_t index;
-		size_t reduce_name;
-		size_t reduce_size;
-		size_t reduce_function;
+		uint64_t index;
+		uint64_t reduce_name;
+		uint64_t reduce_size;
+		uint64_t reduce_function;
 	};
 	std::unordered_map<lalr_table_key, table_node<T>, state_hash> _table; //TODO: two tables
 
@@ -89,12 +89,12 @@ class lalr_table {
 	}
 public:
 	//lalr_table(const std::initializer_list<const std::pair<lalr_table_key, table_node<T>>>& table) : _table(table.begin(), table.end()) {}
-	lalr_table(const unsigned char* data, const size_t data_size, const std::string* strings, const function_t<T>* functions) {
+	lalr_table(const unsigned char* data, const uint64_t data_size, const std::string* strings, const function_t<T>* functions) {
 		lalr_table_data* iter = (lalr_table_data*)data;
 		for (size_t i = 0; i < data_size; ++i, ++iter) {
 			std::string reduce_name;
 			function_t<T> reduce_function;
-			if (iter->reduce_name != (size_t)-1)
+			if (iter->reduce_name != (uint64_t)-1)
 				reduce_name = strings[iter->reduce_name];
 			if (iter->reduce_function)
 				reduce_function = functions[iter->reduce_function];
@@ -155,26 +155,38 @@ public:
 		o << "};" << std::endl;
 
 		o << "function_t<" << type << "> " << name << "_functions[" << functions.size() <<  "];" << std::endl;
-		o << "const size_t " << name << "_size = " << _table.size() << ";" << std::endl;
+		o << "const uint64_t " << name << "_size = " << _table.size() << ";" << std::endl;
 		o << "const unsigned char " << name << "_table[] = {" << std::endl;
 		o << std::hex;
 		for (auto& iter : _table) {
 			if (iter != *_table.begin())
 				o << ", " << std::endl;
-			write_chars(o, &iter.first.first, sizeof(iter.first.first));
-			write_chars(o, &iter.first.second, sizeof(iter.first.second));
-			write_chars(o, &iter.second.type, sizeof(iter.second.type));
-			write_chars(o, &iter.second.index, sizeof(iter.second.index));
-			//write_chars(o, iter.second.reduce_name.c_str(), iter.second.reduce_name.length());
-			size_t num = -1;
+			uint64_t temp;
+			
+			temp = iter.first.first;
+			write_chars(o, &temp, sizeof(temp));
+			
+			temp = iter.first.second;
+			write_chars(o, &temp, sizeof(temp));
+			
+			temp = iter.second.type;
+			write_chars(o, &temp, sizeof(temp));
+			
+			temp = iter.second.index;
+			write_chars(o, &temp, sizeof(temp));
+			
+			temp = -1;
 			if (!iter.second.reduce_name.empty())
-				num = strings_find[iter.second.reduce_name];
-			write_chars(o, &num, sizeof(num));
-			write_chars(o, &iter.second.reduce_size, sizeof(iter.second.reduce_size));
-			num = 0;
+				temp = strings_find[iter.second.reduce_name];
+			write_chars(o, &temp, sizeof(temp));
+
+			temp = iter.second.reduce_size;
+			write_chars(o, &temp, sizeof(temp));
+
+			temp = 0;
 			if (iter.second.reduce_function) 
-				num = functions[iter.second.index];
-			write_chars(o, &num, sizeof(num), false);
+				temp = functions[iter.second.index];
+			write_chars(o, &temp, sizeof(temp), false);
 		}
 		o << std::dec;
 		o << std::endl << "};";

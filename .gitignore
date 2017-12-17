@@ -1,4 +1,5 @@
-Debug/*
-input.txt
+build/*
+CMakeFiles/*
 *.txt
 *.gv
+*.c
