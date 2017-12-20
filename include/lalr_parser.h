@@ -103,7 +103,7 @@ public:
 
 			_states.push(state_node.index);
 			if(node.reduce_function)
-				if (!node.reduce_function(_tree))
+				if (!node.reduce_function(_tree, symbol, data))
 					return true;
 
 			return next(symbol, data); //TODO: без рекурсии

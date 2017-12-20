@@ -24,7 +24,13 @@ int main(int argc, char* argv[]) {
 	}
 
 	c_parser parser(file_in);
-	parser.run();
+	try {
+		parser.run();
+	}
+	catch(std::runtime_error& e) {
+		std::cout << "Syntax error occurred: " << e.what() << std::endl;
+		return 2;
+	}
 	parse_tree<c_token>& tree = parser.get_tree();
 	tree.to_dot(file_out);
 

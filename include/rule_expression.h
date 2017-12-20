@@ -16,7 +16,7 @@ template <typename T>
 class parse_tree;
 
 template <typename T>
-using function_t = std::function<bool(parse_tree<T>&)>;
+using function_t = std::function<bool(parse_tree<T>&, T&, std::string&)>;
 
 template <typename T>
 class rule_expression {

@@ -96,7 +96,7 @@ public:
 			function_t<T> reduce_function;
 			if (iter->reduce_name != (uint64_t)-1)
 				reduce_name = strings[iter->reduce_name];
-			if (iter->reduce_function)
+			if (iter->reduce_function != (uint64_t)-1)
 				reduce_function = functions[iter->reduce_function];
 			_table[lalr_table_key(iter->index_i, iter->index_j)] = table_node<T>(iter->type, iter->index, reduce_name, iter->reduce_size, reduce_function);
 		}			
@@ -183,7 +183,7 @@ public:
 			temp = iter.second.reduce_size;
 			write_chars(o, &temp, sizeof(temp));
 
-			temp = 0;
+			temp = -1;
 			if (iter.second.reduce_function) 
 				temp = functions[iter.second.index];
 			write_chars(o, &temp, sizeof(temp), false);
