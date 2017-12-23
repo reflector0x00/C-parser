@@ -716,9 +716,9 @@ int main(int argc, char* argv[]) {
 		| declaration_specifiers + init_declarator_list + rt(t_semicolon)
 		[function_t<c_token>([&typedefs](parse_tree<c_token>& data, c_token& symbol, std::string& name) mutable {
 			parse_tree<c_token>& current = data.last();
-			if (current.at(0).begin()->id() == t_typedef) {
+			if (current.at(0).leaf_begin()->id() == t_typedef) {
 				for (size_t i = 0; i < current.at(1).size(); ++i)
-					for(auto iter = current.at(1).at(i).begin(); iter != current.at(1).at(i).end(); ++iter) {
+					for (auto iter = current.at(1).at(i).leaf_begin(); iter != current.at(1).at(i).leaf_end(); ++iter) {
 						if (iter->id() == t_identifier) {
 							typedefs.insert(iter->data());
 							if (iter->data() == name)
